@@ -8,8 +8,7 @@
 #ifndef HEADERS_THREAD_H_
 #define HEADERS_THREAD_H_
 
-#include "PCB.h"
-
+#include<iostream.h>
 typedef unsigned long StackSize;
 const StackSize defaultStackSize = 4096;
 typedef unsigned int Time; // time, x 55ms
@@ -25,8 +24,8 @@ public:
  void waitToComplete();
  virtual ~Thread();
  ID getId();
- static ID getRunningId();
- static Thread * getThreadById(ID id);
+ static ID getRunningId(); // napraviti funkciju
+ static Thread * getThreadById(ID id); //napraviti funkciju
 
 protected:
 
@@ -34,10 +33,14 @@ protected:
  Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
 defaultTimeSlice);
 
- virtual void run() {}
+ virtual void run()=0;
 
 private:
+ ID id;
+ static ID idgThread;
  PCB* myPCB;
+
+ static void wrapper(Thread* thread){} // treba dodati telo
 };
 void dispatch ();
 
