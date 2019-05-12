@@ -15,6 +15,8 @@ typedef unsigned int Time; // time, x 55ms
 const Time defaultTimeSlice = 2; // default = 2*55ms
 typedef int ID;
 
+
+
 class PCB; // Kernel's implementation of a user's thread
 
 class Thread {
@@ -27,20 +29,27 @@ public:
  static ID getRunningId(); // napraviti funkciju
  static Thread * getThreadById(ID id); //napraviti funkciju
 
+ Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
+ defaultTimeSlice);
+ PCB* myPCB;
+
 protected:
 
  friend class PCB;
- Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
+/* Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
 defaultTimeSlice);
-
- virtual void run()=0;
+*/
+ virtual void run();
 
 private:
  ID id;
  static ID idgThread;
- PCB* myPCB;
+// PCB* myPCB;
 
- static void wrapper(Thread* thread){} // treba dodati telo
+ static void wrapper(Thread* thread){
+	 thread->run();
+ } // treba dodati telo
+ void exitThread();
 };
 void dispatch ();
 
