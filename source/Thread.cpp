@@ -15,6 +15,7 @@ Thread::Thread (StackSize stackSize, Time timeSlice)
 {
 	id=++idgThread;
 
+
 	//printf("%d\n",id);
 	myPCB=new PCB(stackSize,timeSlice,this);
 
@@ -70,4 +71,9 @@ void Thread::run()
 	}
 
 	this->exitThread();
+}
+
+ID Thread::getRunningId()
+{
+	return getRunningID();
 }

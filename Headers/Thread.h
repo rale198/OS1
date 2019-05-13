@@ -26,7 +26,7 @@ public:
  void waitToComplete();
  virtual ~Thread();
  ID getId();
- static ID getRunningId(); // napraviti funkciju
+ static ID getRunningId();
  static Thread * getThreadById(ID id); //napraviti funkciju
 
  Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
@@ -48,7 +48,7 @@ private:
 
  static void wrapper(Thread* thread){
 	 thread->run();
- } // treba dodati telo
+ } //treaba dopuniti
  void exitThread();
 };
 void dispatch ();

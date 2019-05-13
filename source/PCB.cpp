@@ -100,8 +100,11 @@ PCB::PCB(StackSize sizestack,Time slicetime,Thread* const myThr)
 	bp=sp;
 }
 
-PCB::PCB()
+PCB::PCB() //PCB konstruktor za main thread
 {
+
+	stackSize=defaultStackSize; //inicijalizacija cisto zbog warninga
+	ss=sp=0; // isto
 
 	stack=new unsigned[defaultStackSize/sizeof(unsigned)];
 #ifndef BCC_BLOCK_IGNORE
@@ -118,5 +121,11 @@ PCB::PCB()
 
 }
 
+ID getRunningID() {return PCB::running->myThread->getId();}
+
 volatile PCB* PCB::running=0;
 
+void PCB::write()
+{
+	cout<<"Thread with quant: "<<this->quant<<endl;
+}

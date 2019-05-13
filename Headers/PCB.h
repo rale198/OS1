@@ -23,6 +23,7 @@ void interrupt timer(...); //mozda ne treba imati 3 tacke
 class Thread;
 class Timer;
 
+ID getRunningID();
 
 class PCB{
 
@@ -53,6 +54,6 @@ PCB(StackSize sizestack,Time slicetime,Thread* const myThread);
 PCB();
 
 
-
+void write(); // test only
 };
 #endif /* HEADERS_PCB_H_ */
