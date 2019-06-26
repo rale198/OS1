@@ -8,36 +8,44 @@
 #ifndef HEADERS_LISTPCB_H_
 #define HEADERS_LISTPCB_H_
 #include "PCB.h"
+#include "Lock.h"
 
-class ListPCB
-{
+class ListPCB {
 
 public:
 
-	struct Node{
+	struct Node {
 		PCB* pcb;
 		Node* next;
 
-		Node(PCB*p)
-		{
-			pcb=p;
-			next=0;
-		};
+		Node(PCB*p) {
+			pcb = p;
+			next = 0;
+		}
+		;
 	};
 
-
-
-	ListPCB(){head=prev=0;};
+	ListPCB() {
+		head = prev = 0;
+		size = 0;
+	}
+	;
 	~ListPCB();
 	void insertBegin(PCB*);
 	void insertEnd(PCB*);
+	PCB* removeEnd();
+	PCB* removeBegin();
+	Thread* getThreadById(ID);
 
+	int getSize() {
+		return size;
+	}
+	;
 	void write();
 private:
 
-	Node *head,*prev;
+	int size;
+	Node *head, *prev;
 };
-
-
 
 #endif /* HEADERS_LISTPCB_H_ */

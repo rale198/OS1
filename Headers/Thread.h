@@ -18,16 +18,18 @@ typedef int ID;
 
 
 class PCB; // Kernel's implementation of a user's thread
+class ListPCB;
 
 class Thread {
 public:
 
+ static int test; //test for waitToComplete only
  void start();
  void waitToComplete();
  virtual ~Thread();
  ID getId();
  static ID getRunningId();
- static Thread * getThreadById(ID id); //napraviti funkciju
+ static Thread * getThreadById(ID id);
 
  Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
  defaultTimeSlice);
@@ -35,6 +37,7 @@ public:
 
 protected:
 
+ friend class ListPCB;
  friend class PCB;
 /* Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
 defaultTimeSlice);
@@ -46,9 +49,7 @@ private:
  static ID idgThread;
 // PCB* myPCB;
 
- static void wrapper(Thread* thread){
-	 thread->run();
- } //treaba dopuniti
+ static void wrapper(Thread* thread);
  void exitThread();
 };
 void dispatch ();

@@ -8,41 +8,69 @@
 #include "Timer.h"
 #include "Thread.h"
 #include "ListPCB.h"
-#define lock asm cli
+#include "Lock.h"
+#include <math.h>
 
-// Dozvoljava prekide
-#define unlock asm sti
+volatile PCB* mainPCB = new PCB();
+int userMain(int argc, char* argv[]) {
 
-int userMain(int argc,char* argv[])
-{
+#ifndef BCC_BLOCK_IGNORE
+	HARD_LOCK
+#endif
+	//poseban konstruktor za main thread
+	Thread* t1 = new Thread(defaultStackSize, 5);
+	Thread* t2 = new Thread(defaultStackSize, 10);
+	Thread* t3 = new Thread(defaultStackSize, 0);
+	Thread* t4 = new Thread(defaultStackSize, 2);
+	Thread* t5 = new Thread(defaultStackSize, 6);
+	Thread* t6 = new Thread(defaultStackSize, 7);
+	Thread* t7 = new Thread(defaultStackSize, 8);
+	Thread* t8 = new Thread(defaultStackSize, 9);
+	Thread* t9 = new Thread(defaultStackSize, 10);
+	Thread* t10 = new Thread(defaultStackSize, 11);
+	Thread* t11 = new Thread(defaultStackSize, 12);
 
-	Thread* threads[15];
+	t1->start();
+	t2->start();
+	t3->start();
+	t4->start();
+	t5->start();
+	t6->start();
+	t7->start();
+	t8->start();
+	t9->start();
+	t10->start();
+	t11->start();
+#ifndef BCC_BLOCK_IGNORE
+	HARD_UNLOCK
+#endif
 
-	int i;
-	for(i=0;i<15;i++)
-		threads[i]=new Thread(512,i);
+	for (int i = 0; i < 10; i++) {
 
-	ListPCB* lista=new ListPCB();
+		LOCK
+		cout << "Main: " << i << endl;
+		UNLOCK
+		for (int ik = 0; ik < 30000; ik++)
+			for (int j = 0; j < 30000; j++)
+				;
+	}
 
-	for(i=0;i<15;i++)
-		lista->insertBegin(threads[i]->myPCB);
-
-	lista->write();
+	t1->waitToComplete();
+	t2->waitToComplete();
+	t4->waitToComplete();
 
 	return 0;
 }
-int main(int argc,char* argv[])
-{
+int main(int argc, char* argv[]) {
 
+	PCB::running = mainPCB;
 
-	//Timer::init_timer();
+	Timer::init_timer();
 
+	int i = userMain(argc, argv);
 
-	int i= userMain(argc,argv);
+	Timer::restore_timer();
 
-
-	//Timer::restore_timer();
-
-	cout<<"Program finished"<<endl;
+	cout << "Program finished" << endl;
 	return i;
 }

@@ -10,17 +10,20 @@
 
 #include "Thread.h"
 
-class Idle: public Thread
-{
+class Idle: public Thread {
 public:
 
-	Idle():Thread(){};
+	Idle() :
+			Thread() {
+	}
+	;
 
-	virtual void run() override {
-		while(1);
-	};
+	void run() {
+
+		while (1)
+			;
+	}
+	;
 };
-
-
 
 #endif /* HEADERS_IDLE_H_ */

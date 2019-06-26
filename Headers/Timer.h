@@ -11,6 +11,7 @@
 extern unsigned oldTimerOFF;
 extern unsigned oldTimerSEG;
 
+void tick();
 class Timer{
 
 public:

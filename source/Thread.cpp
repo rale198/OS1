@@ -5,21 +5,20 @@
  *      Author: OS1
  */
 
-//#include "Thread.h"
-#include  "Thread.h"
+#include "Thread.h"
+#include "ListPCB.h"
 #include "PCB.h"
-
+#include "Lock.h"
 ID Thread::idgThread=0;
-
+int Thread::test=0;
 Thread::Thread (StackSize stackSize, Time timeSlice)
 {
 	id=++idgThread;
 
-
-	//printf("%d\n",id);
 	myPCB=new PCB(stackSize,timeSlice,this);
 
-	//treba ubaciti u listu
+	allPCB->insertEnd(myPCB);
+
 };
 
 void Thread::start()
@@ -31,11 +30,24 @@ void Thread::start()
 	}
 
 }
-void Thread::waitToComplete(){} //TEK TREBA IMPLEMENTIRATI
+void Thread::waitToComplete(){
 
- Thread::~Thread(){
+	LOCK
+
+	myPCB->waitToComplete();
+
+	UNLOCK
+
+
+}
+
+Thread::~Thread(){
+	LOCK
+
 	 delete [] myPCB;
 	 myPCB=0;
+
+	 UNLOCK
  }
 
 ID Thread::getId(){return this->id;}
@@ -43,37 +55,72 @@ ID Thread::getId(){return this->id;}
 void dispatch()
 {
 
-	asm cli;
 
+#ifndef BCC_BLOCK_IGNORE
+	asm cli;
+#endif
+	int before = lock;
+	lock = 0;
 	zahtevana_promena_konteksta=1;
 	timer();
-
+	lock = before;
+#ifndef BCC_BLOCK_IGNORE
 	asm sti;
+#endif
 }
 
 void Thread::exitThread()
 {
 
+	LOCK
+	Thread::test++; //test only
 	this->myPCB->state=PCB::finished;
 	dispatch();
+	UNLOCK
 }
 
 void Thread::run()
 {
-	for(int i=0;i<30;i++)
+	for(int i=0;i<10;i++)
 	{
-		lockFlag=0;
-		cout<<"Thread: "<<this->getId()<<endl;
-		lockFlag=1;
+		LOCK
+		cout<<"Thread: "<<this->getId()<<" Time slice: "<<this->myPCB->quant<<endl;
+		UNLOCK
 
+		if(this->getId()%2==0)
+			Thread::getThreadById(3)->waitToComplete();
+		else
+			Thread::getThreadById(2)->waitToComplete();
 		for(int k=0;k<30000;k++)
 			for(int j=0;j<30000;j++);
 	}
-
-	this->exitThread();
+	LOCK
+	cout<<"Thread finished"<<this->getId()<<endl;
+	UNLOCK
 }
 
 ID Thread::getRunningId()
 {
+
 	return getRunningID();
+
+}
+
+Thread* Thread::getThreadById(ID id)
+{
+	LOCK
+
+	Thread* ret=allPCB->getThreadById(id);
+
+	UNLOCK
+	return ret;
+}
+
+void Thread::wrapper(Thread* thread){
+	 thread->run();
+
+	 LOCK
+	 thread->myPCB->exThread(); //pobrisati listu sa BLOCKPCBS i vratiti u scheduler
+	 thread->exitThread();
+	 UNLOCK
 }
