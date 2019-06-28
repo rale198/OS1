@@ -16,12 +16,14 @@ ListPCB* allPCB = new ListPCB(); // MOZDA VOLATILE
 volatile PCB* PCB::running = 0;
 volatile Idle* PCB::idle = new Idle();
 
+void tick();
 volatile unsigned tss = 0, tsp = 0, tbp = 0;
 void interrupt timer(...)
 {
 
 	if (zahtevana_promena_konteksta == 0) {
 		asm int 60h;
+		tick();
 		if (counter > 0) {
 			counter--;
 
@@ -47,10 +49,9 @@ void interrupt timer(...)
 		PCB::running->sp = tsp;
 		PCB::running->ss = tss;
 		PCB::running->bp = tbp;
-
 		if (PCB::running->state != PCB::finished
 				&& PCB::running->state != PCB::blocked
-				&& PCB::running != PCB::idle->myPCB) {
+				&& (PCB*)PCB::running != PCB::idlePCB) {
 			PCB::running->state = PCB::ready;
 			Scheduler::put((PCB*) (PCB::running));
 		}
@@ -58,7 +59,7 @@ void interrupt timer(...)
 		PCB::running = Scheduler::get();
 
 		if (PCB::running == 0) {
-			PCB::running = PCB::idle->myPCB;
+			PCB::running = PCB::idlePCB;
 		}
 		PCB::running->state = PCB::run;
 
@@ -134,7 +135,7 @@ PCB::PCB() //PCB konstruktor za main thread
 #endif
 
 	bp = sp;
-	this->quant = 5*defaultTimeSlice;
+	this->quant = defaultTimeSlice;
 	myThread = 0;
 	state = PCB::run;
 
@@ -146,6 +147,8 @@ PCB::~PCB() {
 	LOCK
 	delete[] stack;
 	stack = 0;
+	delete blockedPCBs;
+	blockedPCBs=0;
 	UNLOCK
 }
 ;
@@ -169,7 +172,7 @@ void PCB::waitToComplete() {
 			&& this->state != PCB::blocked) {
 		PCB::running->state = PCB::blocked;
 
-		this->blockedPCBs->insertEnd((PCB*) PCB::running);
+		this->blockedPCBs->insertBegin((PCB*) PCB::running);
 
 		dispatch();
 
@@ -180,15 +183,35 @@ void PCB::exThread() {
 	PCB* tmp = 0;
 
 	while (1) {
-		tmp = this->blockedPCBs->removeEnd();
-
+		tmp = this->blockedPCBs->removeBegin();
 		if (tmp == 0)
 			break;
+
+#ifndef BCC_BLOCK_IGNORE
+		HARD_LOCK
+#endif
+		if(myThread!=0)
+		cout<<"Been here: "<<myThread->getId()<<endl;
+		else
+			cout<<"Been here by mainPCB";
+#ifndef BCC_BLOCK_IGNORE
+		HARD_UNLOCK
+#endif
 
 		tmp->state = PCB::ready;
 
 		Scheduler::put(tmp);
 	}
 
+#ifndef BCC_BLOCK_IGNORE
+		HARD_LOCK
+#endif
+		if(myThread!=0)
+		cout<<"Finished deletion "<<myThread->getId()<<endl;
+		else
+		cout<<"Finished deletion by mainPCB"<<endl;
+#ifndef BCC_BLOCK_IGNORE
+		HARD_UNLOCK
+#endif
 	tmp = 0;
 }

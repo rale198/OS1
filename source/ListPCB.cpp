@@ -64,14 +64,13 @@ PCB* ListPCB::removeEnd(){
 
 	if(tmp!=0)
 	{
-
 		while(tmp->next!=0)
 		{
 			pret=tmp;
 			tmp=tmp->next;
 		}
 
-		pcb=tmp->pcb;
+		pcb=tmp->pcb; //mozda ovde ima bug
 
 		delete tmp;
 

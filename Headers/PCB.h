@@ -37,8 +37,10 @@ public:
 
 	friend class Thread;
 	friend class ListPCB;
+	friend class Idle;
 
 	static volatile PCB* running;
+	static volatile PCB* idlePCB;
 	static volatile Idle* idle;
 	ListPCB* blockedPCBs;
 

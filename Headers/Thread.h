@@ -31,25 +31,21 @@ public:
  static ID getRunningId();
  static Thread * getThreadById(ID id);
 
- Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
- defaultTimeSlice);
- PCB* myPCB;
-
 protected:
 
  friend class ListPCB;
  friend class PCB;
-/* Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
+ Thread (StackSize stackSize = defaultStackSize, Time timeSlice =
 defaultTimeSlice);
-*/
- virtual void run();
+
+virtual void run(){};
+static void wrapper(Thread* thread);
 
 private:
  ID id;
  static ID idgThread;
-// PCB* myPCB;
+ PCB* myPCB;
 
- static void wrapper(Thread* thread);
  void exitThread();
 };
 void dispatch ();

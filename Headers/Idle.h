@@ -9,7 +9,8 @@
 #define HEADERS_IDLE_H_
 
 #include "Thread.h"
-
+#include "Lock.h"
+#include "Kernel.h"
 class Idle: public Thread {
 public:
 
@@ -24,6 +25,7 @@ public:
 			;
 	}
 	;
+
 };
 
 #endif /* HEADERS_IDLE_H_ */
