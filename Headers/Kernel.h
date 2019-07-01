@@ -13,6 +13,8 @@
 #include "Thread.h"
 #include "ListPCB.h"
 #include "Lock.h"
+#include "Kernelse.h"
+#include "ListSEM.h"
 #include <math.h>
 
 int syncPrintf(const char *format, ...);

@@ -1,12 +1,15 @@
 #include "kernel.h"
+#include <iostream.h>
+#include <stdlib.h>
 
 /*
- 	 Test: frekventni dispatch
+ 	 Test: Semafori bez realizacije spavanja
 */
 
-const int n = 10;
+const int n = 15;
+int count = 10;
 
-void tick(){}
+Semaphore s(2);
 
 class TestThread : public Thread
 {
@@ -25,15 +28,14 @@ protected:
 
 void TestThread::run()
 {
-	for(int i=0;i<32000;i++)
-	{
-		for(int j=0;j<16;j++){
-		dispatch();
-		syncPrintf(".");
-		}
-	}
+	s.wait(0);
+	cout<<"Thread "<<getId()<<" in critical section."<<endl;
+	for(unsigned int i=0;i<64000;i++)
+		for(unsigned int j=0;j<64000;j++);
+	s.signal();
 }
 
+void tick(){}
 
 int userMain(int argc, char** argv)
 {

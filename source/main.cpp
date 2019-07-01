@@ -9,6 +9,7 @@
 #include "Thread.h"
 #include "ListPCB.h"
 #include "Lock.h"
+#include "Kernelse.h"
 #include <math.h>
 
 int userMain(int,char**);
@@ -23,7 +24,7 @@ int main(int argc, char* argv[]) {
 	int i = userMain(argc, argv);
 
 	Timer::restore_timer();
-
+	delete allPCB;
 	cout << "Program finished" << endl;
-	return 0;
+	return i;
 }

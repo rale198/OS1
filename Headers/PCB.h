@@ -14,13 +14,13 @@
 #include <dos.h>
 #include "Idle.h"
 #include "SCHEDULE.H"
+#include "ListPCB.h"
 
 extern volatile unsigned counter;
 extern volatile int zahtevana_promena_konteksta;
 extern volatile int contextSwitchDelayed;
 void interrupt timer(...);
 
-class ListPCB;
 class Thread;
 class Timer;
 
@@ -32,8 +32,7 @@ class PCB {
 public:
 	enum State {
 		ready = 0, blocked, run, finished, notStarted
-	}; //ovim znamo u kom stanju je trenutna nit
-	//proveriti da li treba da bude javno
+	};
 
 	friend class Thread;
 	friend class ListPCB;
@@ -44,7 +43,7 @@ public:
 	static volatile Idle* idle;
 	ListPCB* blockedPCBs;
 
-	unsigned * stack;
+	unsigned *stack;
 	unsigned ss;
 	unsigned sp;
 	unsigned bp;
