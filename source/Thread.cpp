@@ -13,20 +13,24 @@ ID Thread::idgThread = 0;
 int Thread::test = 0;
 volatile PCB* PCB::idlePCB=0;
 Thread::Thread(StackSize stackSize, Time timeSlice) {
+	LOCK
 	id = ++idgThread;
 	myPCB = new PCB(stackSize, timeSlice, this);
 	if (id == 1)
 		PCB::idlePCB = myPCB;
 	allPCB->insertEnd(myPCB);
+	UNLOCK
 
 }
 ;
 
 void Thread::start() {
+	LOCK
 	if (myPCB->state == PCB::notStarted) {
 		myPCB->state = PCB::ready;
 		Scheduler::put(this->myPCB);
 	}
+	UNLOCK
 
 }
 void Thread::waitToComplete() {

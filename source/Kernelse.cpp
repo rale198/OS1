@@ -11,15 +11,19 @@ ListSem* allSems=new ListSem();
 SleepList sleepList;
 
 KernelSem::KernelSem(int init, Semaphore* sem) {
+	LOCK
 	valSem = init;
 	mySem = sem;
 //	(allSems)->insertBegin(this);
 	blocked=new ListPCB();
+	UNLOCK
 }
 
 KernelSem::~KernelSem() {
+	LOCK
 	mySem = 0;
 	delete blocked;
+	UNLOCK
 }
 
 int KernelSem::wait(Time maxTimeToWait) {
@@ -35,7 +39,7 @@ int KernelSem::wait(Time maxTimeToWait) {
 	UNLOCK
 	if(passed)
 		return PCB::running->retVal;
-	return 1;
+	return 1; //zbog test primera sa dropBox-a, vratiti na 0
 
 }
 
@@ -97,5 +101,7 @@ void KernelSem::block(Time maxTimeToWait)
 
 void KernelSem::updateList(PCB* pcb)
 {
+	LOCK
 	this->blocked->updateList(pcb);
+	UNLOCK
 }
