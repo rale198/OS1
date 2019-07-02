@@ -3,19 +3,23 @@
 #include <stdlib.h>
 
 /*
- 	 Test: Semafori bez realizacije spavanja
+ 	 Test: Semafori sa spavanjem 4
 */
 
-const int n = 15;
-int count = 10;
+int t=-1;
 
-Semaphore s(2);
+const int n=15;
+
+Semaphore s(1);
 
 class TestThread : public Thread
 {
+private:
+	Time waitTime;
+
 public:
 
-	TestThread(): Thread(){}
+	TestThread(Time WT): Thread(), waitTime(WT){}
 	~TestThread()
 	{
 		waitToComplete();
@@ -28,28 +32,35 @@ protected:
 
 void TestThread::run()
 {
-	s.wait(0);
-	cout<<"Thread "<<getId()<<" in critical section."<<endl;
-	for(unsigned int i=0;i<64000;i++)
-		for(unsigned int j=0;j<64000;j++);
-	s.signal();
+	syncPrintf("Thread %d waits for %d units of time.\n",getId(),waitTime);
+	int r = s.wait(waitTime);
+	if(getId()%2)
+		s.signal();
+	syncPrintf("Thread %d finished: r = %d\n", getId(),r);
 }
 
-void tick(){}
+void tick()
+{
+	t++;
+	if(t>0&&t<75)
+		syncPrintf("%d\n",t);
+}
 
 int userMain(int argc, char** argv)
 {
 	syncPrintf("Test starts.\n");
-	TestThread t[n];
+	TestThread* t[n];
 	int i;
 	for(i=0;i<n;i++)
 	{
-		t[i].start();
+		t[i] = new TestThread(5*(i+1));
+		t[i]->start();
 	}
 	for(i=0;i<n;i++)
 	{
-		t[i].waitToComplete();
+		t[i]->waitToComplete();
 	}
+	delete t;
 	syncPrintf("Test ends.\n");
 	return 0;
 }

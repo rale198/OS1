@@ -42,6 +42,7 @@ public:
 	}
 	;
 	void write();
+	void updateList(PCB*);
 private:
 
 	int size;

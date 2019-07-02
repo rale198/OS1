@@ -121,3 +121,52 @@ Thread* ListPCB::getThreadById(ID id)
 	}
 	return ret;
 }
+
+void ListPCB::updateList(PCB*pcb)
+{
+
+	if(head==0)
+		return;
+
+	Node*prv=0,*tmp=head,*nxt=head->next;
+
+	while(tmp!=0&&tmp->pcb!=pcb)
+	{
+		prv=tmp;
+		tmp=nxt;
+		nxt=nxt->next;
+	}
+
+	if(tmp==0)
+		return;
+
+	if(prv!=0&&nxt!=0)
+	{
+		prv->next=nxt;
+		tmp->next=0;
+		delete tmp;
+	}
+	else if(nxt==0&&prv==0)
+	{
+		delete tmp;
+		head=0;
+		prev=0;
+	}
+	else if(nxt==0)
+	{
+		prv->next=0;
+		prev=prv;
+		tmp->next=0;
+		delete tmp;
+	}
+	else if(prv==0)
+	{
+		if(nxt!=0)
+		{
+			head=nxt;
+		}
+		else head=0;
+		tmp->next=0;
+		delete tmp;
+	}
+}

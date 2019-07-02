@@ -8,6 +8,7 @@
 #include "PCB.h"
 #include "ListPCB.h"
 #include "Lock.h"
+#include "Kernelse.h"
 
 volatile int zahtevana_promena_konteksta = 0;
 volatile int contextSwitchDelayed = 0; //ako sam stigao do 0 ali je zakljucano, kada lock==0 menjas kontekst
@@ -24,6 +25,7 @@ void interrupt timer(...)
 	if (zahtevana_promena_konteksta == 0) {
 		asm int 60h;
 		tick();
+		sleepList.timerUpdate();
 		if (counter > 0) {
 			counter--;
 
@@ -88,6 +90,7 @@ PCB::PCB(StackSize sizestack, Time slicetime, Thread* const myThr) {
 	if (sizestack > 65535)
 		sizestack = 65535;
 
+	this->retVal=0;
 	this->ss = this->sp = 0;
 	this->state = notStarted;
 
@@ -124,6 +127,7 @@ PCB::PCB(StackSize sizestack, Time slicetime, Thread* const myThr) {
 PCB::PCB() //PCB konstruktor za main thread
 {
 
+	this->retVal=0;
 	stackSize = defaultStackSize; //inicijalizacija cisto zbog warninga
 	ss = sp = 0; // isto
 
@@ -169,7 +173,7 @@ void PCB::waitToComplete() {
 			&& PCB::running->state != PCB::notStarted
 			&& PCB::running->state != PCB::finished
 			&& this->state != PCB::finished && this->state != PCB::notStarted
-			&& this->state != PCB::blocked) {
+			/*&& this->state != PCB::blocked*/) {
 		PCB::running->state = PCB::blocked;
 
 		this->blockedPCBs->insertBegin((PCB*) PCB::running);
@@ -186,32 +190,9 @@ void PCB::exThread() {
 		tmp = this->blockedPCBs->removeBegin();
 		if (tmp == 0)
 			break;
-
-#ifndef BCC_BLOCK_IGNORE
-		HARD_LOCK
-#endif
-		if(myThread!=0)
-		cout<<"Been here: "<<myThread->getId()<<endl;
-		else
-			cout<<"Been here by mainPCB";
-#ifndef BCC_BLOCK_IGNORE
-		HARD_UNLOCK
-#endif
-
 		tmp->state = PCB::ready;
 
 		Scheduler::put(tmp);
 	}
-
-#ifndef BCC_BLOCK_IGNORE
-		HARD_LOCK
-#endif
-		if(myThread!=0)
-		cout<<"Finished deletion "<<myThread->getId()<<endl;
-		else
-		cout<<"Finished deletion by mainPCB"<<endl;
-#ifndef BCC_BLOCK_IGNORE
-		HARD_UNLOCK
-#endif
 	tmp = 0;
 }

@@ -19,12 +19,7 @@ public:
 	}
 	;
 
-	void run() {
-
-		while (1)
-			;
-	}
-	;
+	void run();
 
 };
 

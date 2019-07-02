@@ -11,12 +11,15 @@
 
 class ListSem;
 class Semaphore;
+class SleepList;
 
 extern ListSem* allSems;
+extern SleepList sleepList;
 class KernelSem {
 
 	friend class Semaphore;
 	friend class ListSem;
+	friend class SleepList;
 private:
 
 	int valSem;
@@ -34,6 +37,7 @@ public:
 
 private:
 
+	void updateList(PCB*);
 	void block(Time);
 	void deblock();
 

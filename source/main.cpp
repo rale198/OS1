@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
 
 	Timer::restore_timer();
 	delete allPCB;
+	delete allSems;
 	cout << "Program finished" << endl;
 	return i;
 }

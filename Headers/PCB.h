@@ -37,6 +37,7 @@ public:
 	friend class Thread;
 	friend class ListPCB;
 	friend class Idle;
+	friend class SleepList;
 
 	static volatile PCB* running;
 	static volatile PCB* idlePCB;
@@ -61,6 +62,8 @@ public:
 
 	void waitToComplete();
 	void exThread();
-	void write(); // test only
+	void write();
+	unsigned retVal;
+	// test only
 };
 #endif /* HEADERS_PCB_H_ */

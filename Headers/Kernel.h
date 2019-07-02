@@ -15,6 +15,7 @@
 #include "Lock.h"
 #include "Kernelse.h"
 #include "ListSEM.h"
+#include "SleepLst.h"
 #include <math.h>
 
 int syncPrintf(const char *format, ...);

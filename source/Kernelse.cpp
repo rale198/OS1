@@ -8,11 +8,12 @@
 #include "ListSEM.h"
 #include "Lock.h"
 ListSem* allSems=new ListSem();
+SleepList sleepList;
 
 KernelSem::KernelSem(int init, Semaphore* sem) {
 	valSem = init;
 	mySem = sem;
-	(allSems)->insertBegin(this);
+//	(allSems)->insertBegin(this);
 	blocked=new ListPCB();
 }
 
@@ -22,14 +23,19 @@ KernelSem::~KernelSem() {
 }
 
 int KernelSem::wait(Time maxTimeToWait) {
+	int passed=0;
 	LOCK
 	this->valSem=this->valSem-1;
 
-	if(this->valSem<0)
+	if(this->valSem<0){
 		block(maxTimeToWait);
+		passed=1;
+	}
 
 	UNLOCK
-	return 0;
+	if(passed)
+		return PCB::running->retVal;
+	return 1;
 
 }
 
@@ -76,11 +82,20 @@ void KernelSem::deblock()
 	PCB* pcb=blocked->removeEnd();
 	pcb->state=PCB::ready;
 	Scheduler::put(pcb);
+	pcb->retVal=1;
+	sleepList.updateSleepList(pcb);
 }
 
 void KernelSem::block(Time maxTimeToWait)
 {
 	PCB::running->state=PCB::blocked;
 	blocked->insertBegin((PCB*)PCB::running);
+	if(maxTimeToWait>0)
+		sleepList.insert(maxTimeToWait,(PCB*)PCB::running,this);
 	dispatch();
+}
+
+void KernelSem::updateList(PCB* pcb)
+{
+	this->blocked->updateList(pcb);
 }
