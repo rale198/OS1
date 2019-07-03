@@ -16,6 +16,9 @@
 #include "Kernelse.h"
 #include "ListSEM.h"
 #include "SleepLst.h"
+#include "KernelEv.h"
+#include "IVTEntry.h"
+#include "Event.h"
 #include <math.h>
 
 int syncPrintf(const char *format, ...);
