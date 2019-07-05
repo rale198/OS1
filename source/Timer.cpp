@@ -7,57 +7,72 @@
 #include "Timer.h"
 #include "PCB.h"
 
-unsigned oldTimerOFF=0;
-unsigned oldTimerSEG=0;
+unsigned oldTimerOFF = 0;
+unsigned oldTimerSEG = 0;
 
-void Timer::init_timer()
-{
-	asm{
-			cli
-			push es
-			push ax
-
-			mov ax,0   //  ; inicijalizuje rutinu za tajmer
-			mov es,ax
-
-			mov ax, word ptr es:0022h //; pamti staru rutinu
-			mov word ptr oldTimerSEG, ax
-			mov ax, word ptr es:0020h
-			mov word ptr oldTimerOFF, ax
-
-			mov word ptr es:0022h, seg timer	 //postavlja
-			mov word ptr es:0020h, offset timer //novu rutinu
-
-			mov ax, oldTimerSEG	 //	postavlja staru rutinu
-			mov word ptr es:0182h, ax //; na int 60h
-			mov ax, oldTimerOFF
-			mov word ptr es:0180h, ax
-
-			pop ax
-			pop es
-			sti
-		}
-
-};
-
-void Timer::restore_timer()
-{
+void killThread() {
+	PCB::running->killFlag=1;
+}
+void callParent() {}
+void callMySelf() {LOCK cout<<"You've called yourself"<<endl;UNLOCK}
+void Timer::init_timer() {
+#ifndef BCC_BLOCK_IGNORE
 	asm {
-			cli
-			push es
-			push ax
+		cli
+		push es
+		push ax
 
-			mov ax,0
-			mov es,ax
+		mov ax,0   //  ; inicijalizuje rutinu za tajmer
+		mov es,ax
 
+		mov ax, word ptr es:0022h//; pamti staru rutinu
+		mov word ptr oldTimerSEG, ax
+		mov ax, word ptr es:0020h
+		mov word ptr oldTimerOFF, ax
 
-			mov ax, word ptr oldTimerSEG
-			mov word ptr es:0022h, ax
-			mov ax, word ptr oldTimerOFF
-			mov word ptr es:0020h, ax
+		mov word ptr es:0022h, seg timer//postavlja
+		mov word ptr es:0020h, offset timer//novu rutinu
 
-			pop ax
-			pop es
-			sti
-		}
+		mov ax, oldTimerSEG//	postavlja staru rutinu
+		mov word ptr es:0182h, ax//; na int 60h
+		mov ax, oldTimerOFF
+		mov word ptr es:0180h, ax
+
+		pop ax
+		pop es
+		sti
+	}
+#endif
+
+}
+;
+
+void Timer::restore_timer() {
+#ifndef BCC_BLOCK_IGNORE
+	asm {
+		cli
+		push es
+		push ax
+
+		mov ax,0
+		mov es,ax
+
+		mov ax, word ptr oldTimerSEG
+		mov word ptr es:0022h, ax
+		mov ax, word ptr oldTimerOFF
+		mov word ptr es:0020h, ax
+
+		pop ax
+		pop es
+		sti
+	}
+#endif
+}
+
+void Timer::init_handlers() {
+	LOCK
+	((PCB*) PCB::running)->allSignals[0]->addSignalHandler(killThread);
+	((PCB*) PCB::running)->allSignals[1]->addSignalHandler(callParent);
+	((PCB*) PCB::running)->allSignals[2]->addSignalHandler(callMySelf);
+	UNLOCK
 }

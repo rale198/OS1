@@ -170,3 +170,14 @@ void ListPCB::updateList(PCB*pcb)
 		delete tmp;
 	}
 }
+
+void ListPCB::notifyChilds(PCB* pcb)
+{
+	for(Node* tmp=head;tmp!=0;tmp=tmp->next)
+	{
+		if(tmp->pcb->parentPCB!=0&&tmp->pcb->parentPCB==pcb)
+		{
+			tmp->pcb->parentPCB==0;
+		}
+	}
+}

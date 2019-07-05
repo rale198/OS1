@@ -19,6 +19,8 @@
 #include "KernelEv.h"
 #include "IVTEntry.h"
 #include "Event.h"
+#include "Queue.h"
+#include "ListSig.h"
 #include <math.h>
 
 int syncPrintf(const char *format, ...);

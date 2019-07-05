@@ -13,11 +13,12 @@
 #include <math.h>
 
 int userMain(int,char**);
-volatile PCB* mainPCB = new PCB();
-
+ListPCB* allPCB = new ListPCB();
+volatile PCB* mainPCB=0;
+volatile Thread* mainThread=new Thread(1);
 int main(int argc, char* argv[]) {
 
-	PCB::running = mainPCB;
+	//PCB::running = mainPCB;
 
 	Timer::init_timer();
 
@@ -26,6 +27,7 @@ int main(int argc, char* argv[]) {
 	Timer::restore_timer();
 	delete allPCB;
 	delete allSems;
+	delete mainThread;
 	cout << "Program finished" << endl;
 	return i;
 }

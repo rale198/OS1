@@ -43,6 +43,7 @@ public:
 	;
 	void write();
 	void updateList(PCB*);
+	void notifyChilds(PCB*);
 private:
 
 	int size;
