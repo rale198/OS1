@@ -7,7 +7,7 @@
 #include "Kernelse.h"
 #include "ListSEM.h"
 #include "Lock.h"
-ListSem* allSems=new ListSem();
+//ListSem* allSems=new ListSem();
 SleepList sleepList;
 
 KernelSem::KernelSem(int init, Semaphore* sem) {

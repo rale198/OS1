@@ -15,7 +15,7 @@ class Idle: public Thread {
 public:
 
 	Idle() :
-			Thread() {
+			Thread(defaultStackSize, 1) {
 	}
 	;
 

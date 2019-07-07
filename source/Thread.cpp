@@ -11,7 +11,7 @@
 #include "Lock.h"
 ID Thread::idgThread = 0;
 int Thread::test = 0;
-volatile PCB* PCB::idlePCB=0;
+volatile PCB* PCB::idlePCB = 0;
 Thread::Thread(StackSize stackSize, Time timeSlice) {
 	LOCK
 	id = ++idgThread;
@@ -21,13 +21,13 @@ Thread::Thread(StackSize stackSize, Time timeSlice) {
 	allPCB->insertBegin(myPCB);
 	UNLOCK
 
-};
+}
+;
 
-Thread::Thread(int a)
-{
+Thread::Thread(int a) {
 	LOCK
-	this->id=0;
-	myPCB=new PCB(this);
+	this->id = 0;
+	myPCB = new PCB(this);
 
 	allPCB->insertBegin(myPCB);
 	UNLOCK
@@ -67,9 +67,8 @@ ID Thread::getId() {
 }
 
 void dispatch() {
-
 #ifndef BCC_BLOCK_IGNORE
-	asm cli;
+	LOCK_TIMER
 #endif
 	int before = lock;
 	lock = 0;
@@ -77,7 +76,7 @@ void dispatch() {
 	timer();
 	lock = before;
 #ifndef BCC_BLOCK_IGNORE
-	asm sti;
+	UNLOCK_TIMER
 #endif
 }
 
@@ -109,66 +108,56 @@ void Thread::wrapper(Thread* thread) {
 
 	LOCK
 	thread->myPCB->exThread();
-	if(thread->myPCB->parentPCB!=0)
+	if (thread->myPCB->parentPCB != 0)
 		thread->myPCB->parentPCB->signal(1);
-	if(thread->myPCB!=0)
+	if (thread->myPCB != 0)
 		thread->myPCB->signal(2);
 	thread->exitThread();
 	UNLOCK
 }
 
-
-void Thread::signal(SignalId signal)
-{
+void Thread::signal(SignalId signal) {
 	LOCK
 	this->myPCB->signal(signal);
 	UNLOCK
 }
-void Thread::registerHandler(SignalId signal, SignalHandler handler)
-{
+void Thread::registerHandler(SignalId signal, SignalHandler handler) {
 	LOCK
-	this->myPCB->registerHandler(signal,handler);
+	this->myPCB->registerHandler(signal, handler);
 	UNLOCK
 }
-void Thread::unregisterAllHandlers(SignalId id)
-{
+void Thread::unregisterAllHandlers(SignalId id) {
 	LOCK
 	this->myPCB->unregisterAllHandlers(id);
 	UNLOCK
 }
-void Thread::swap(SignalId id, SignalHandler hand1, SignalHandler hand2)
-{
+void Thread::swap(SignalId id, SignalHandler hand1, SignalHandler hand2) {
 	LOCK
-	this->myPCB->swap(id,hand1,hand2);
+	this->myPCB->swap(id, hand1, hand2);
 	UNLOCK
 }
-void Thread::blockSignal(SignalId signal)
-{
+void Thread::blockSignal(SignalId signal) {
 	LOCK
 	this->myPCB->blockSignal(signal);
 	UNLOCK
 }
-void Thread::blockSignalGlobally(SignalId signal)
-{
+void Thread::blockSignalGlobally(SignalId signal) {
 	LOCK
 	PCB::blockSignalGlobally(signal);
 	UNLOCK
 }
-void Thread::unblockSignal(SignalId signal)
-{
+void Thread::unblockSignal(SignalId signal) {
 	LOCK
 	this->myPCB->unblockSignal(signal);
 	UNLOCK
 }
-void Thread::unblockSignalGlobally(SignalId signal)
-{
+void Thread::unblockSignalGlobally(SignalId signal) {
 	LOCK
 	PCB::unblockSignalGlobally(signal);
 	UNLOCK
 }
 
-void Thread::notifyMyThread()
-{
-	this->myPCB=0;
+void Thread::notifyMyThread() {
+	this->myPCB = 0;
 }
 

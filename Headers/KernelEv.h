@@ -9,8 +9,7 @@
 #define HEADERS_KERNELEV_H_
 #include "Event.h"
 #include "PCB.h"
-class KernelEv
-{
+class KernelEv {
 	friend class Event;
 	friend class IVTEntry;
 public:

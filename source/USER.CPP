@@ -30,16 +30,23 @@ int N = 3;            // 1 <= N <= 19
 
 //---------------------------------------------------------------------------//
 
-volatile int theEnd=0;
+volatile int theEnd = 0;
 
-class Producer : public Thread {
+class Producer: public Thread {
 public:
-	Producer (BoundedBuffer* bb, char y, Time time_slice);
-	virtual ~Producer() {waitToComplete(); }
-    Thread* clone() const { return new Producer(myBuffer, x, time_slice_clone); }
+	Producer(BoundedBuffer* bb, char y, Time time_slice);
+	virtual ~Producer() {
+		waitToComplete();
+	}
+	Thread* clone() const {
+		return new Producer(myBuffer, x, time_slice_clone);
+	}
 protected:
-	virtual void run ();
-	char produce() {return x;}; // Produce an item
+	virtual void run();
+	char produce() {
+		return x;
+	}
+	; // Produce an item
 
 private:
 	Time time_slice_clone;
@@ -48,16 +55,20 @@ private:
 	Semaphore sleep;
 };
 
-
-
 //---------------------------------------------------------------------------//
-class Consumer : public Thread {
+class Consumer: public Thread {
 public:
-	Consumer (BoundedBuffer* bb) : Thread(defaultStackSize, 0), myBuffer(bb), sleep(0) {}
-	virtual ~Consumer() {waitToComplete(); }
-	Thread* clone() const { return new Consumer(myBuffer); }
+	Consumer(BoundedBuffer* bb) :
+			Thread(defaultStackSize, 0), myBuffer(bb), sleep(0) {
+	}
+	virtual ~Consumer() {
+		waitToComplete();
+	}
+	Thread* clone() const {
+		return new Consumer(myBuffer);
+	}
 protected:
-	virtual void run ();
+	virtual void run();
 	void consume(char p); // Consume an item
 
 private:
@@ -65,22 +76,23 @@ private:
 	Semaphore sleep;
 };
 
-
-
-
 //---------------------------------------------------------------------------//
 // Korisnicki program mora obavezno da definise ovu f-ju
 //---------------------------------------------------------------------------//
-void tick(){}
+Semaphore sem(0);
+///*
+  void tick() {}
+//*/
 
 //---------------------------------------------------------------------------//
 
+Producer::Producer(BoundedBuffer* bb, char y, Time time_slice) :
+		Thread(defaultStackSize, time_slice), myBuffer(bb), x(y), sleep(0), time_slice_clone(
+				time_slice) {
+}
 
-Producer::Producer (BoundedBuffer* bb, char y, Time time_slice) 
-: Thread(defaultStackSize, time_slice),myBuffer(bb), x(y), sleep(0), time_slice_clone(time_slice) {}
-	
-	void Producer::run () {
-	while(!theEnd) {
+void Producer::run() {
+	while (!theEnd) {
 		char d = produce();
 		myBuffer->append(d);
 		assert(1 != sleep.wait(10));
@@ -89,38 +101,38 @@ Producer::Producer (BoundedBuffer* bb, char y, Time time_slice)
 
 //---------------------------------------------------------------------------//
 
-
 void Consumer::consume(char p) {
 	intLock
-	cout<<p<<" ";
+	cout << p << " ";
 	intUnlock
 } // Consume an item
 
-void Consumer::run () {
-		
+void Consumer::run() {
+
 	int i = 0;
-	while(!theEnd) {
+	while (!theEnd) {
 		char d = myBuffer->take();
 		consume(d);
 		if (i++ == 40) {
 			assert(1 != sleep.wait(5));
 			i = 0;
-		}else for(int j=0;j<200;j++);
+		} else
+			for (int j = 0; j < 200; j++)
+				;
 	}
- 
+
 	intLock
-	cout<<endl<<"ESC pressed - empty the buffer!"<<endl;
+	cout << endl << "ESC pressed - empty the buffer!" << endl;
 	intUnlock
-	
-	while (myBuffer->fullCount()){
+
+	while (myBuffer->fullCount()) {
 		char d = myBuffer->take();
 		consume(d);
 		dispatch();
 	}
-	
-	
+
 	intLock
-	cout<<endl<<"Happy End"<<endl;
+	cout << endl << "Happy End" << endl;
 	intUnlock
 }
 
@@ -130,26 +142,24 @@ void signal1() {
 	signalTest.signal();
 }
 #endif
-
-
-int userMain (int argc, char* argv[])
-{
+///*
+int userMain(int argc, char* argv[]) {
 	BoundedBuffer *buff;
 	Consumer *con;
-	
+
 	intLock
-	if(argc <2){
-		cout<<"Invalid input!"<<endl;
+	if (argc < 2) {
+		cout << "Invalid input!" << endl;
 		intUnlock
 		return -1;
 	}
 	int buffSize = atoi(argv[1]);
 	N = atoi(argv[2]);
-	N = N>19 ? 19 : N;
+	//N = N>19 ? 19 : N;
 	TIME_SLICE = atoi(argv[3]);
-	
-	if(buffSize<N) {
-		cout<<"Number of Producers is larger than Buffer size!"<<endl;
+
+	if (buffSize < N) {
+		cout << "Number of Producers is larger than Buffer size!" << endl;
 		intUnlock
 		return 1;
 	}
@@ -164,25 +174,24 @@ int userMain (int argc, char* argv[])
 	Producer **pro = new Producer*[N];
 	KeyboardEvent* kev;
 	int i;
-	
+
 	con = new Consumer(buff);
-	  
+
 	con->start();
 
-	for (i=0; i<N; i++){
-		pro[i] = new Producer(buff,'0', TIME_SLICE);
+	for (i = 0; i < N; i++) {
+		pro[i] = new Producer(buff, '0', TIME_SLICE);
 #ifdef SIGNAL
-		if (i==0)
-		{
+		if (i == 0) {
 			pro[i]->registerHandler(5, signal1);
 		}
 #endif
 		pro[i]->start();
 	}
-  
+
 	kev = new KeyboardEvent(buff);
 	intUnlock
-	
+
 	kev->start();
 
 #ifdef SIGNAL
@@ -194,21 +203,22 @@ int userMain (int argc, char* argv[])
 		// Kill thread
 		pro[0]->signal(0);
 
-		signalTest.wait(0);
+		pro[0]->signal(0);
 	}
 #endif
 
-	for (i=0; i<N; i++){
+	for (i = 0; i < N; i++) {
 		delete pro[i];
-	}  
-	delete [] pro;
+	}
+	delete[] pro;
 	delete kev;
 	delete con;
 	delete buff;
 
 	intLock
-	cout<<"userMain finished!"<<endl;
+	cout << "userMain finished!" << endl;
 	intUnlock
 	return 0;
 }
+//*/
 //---------------------------------------------------------------------------//

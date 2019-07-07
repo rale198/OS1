@@ -44,6 +44,7 @@ void SleepList::timerUpdate()
 		Scheduler::put(pcb);
 		tmp->mySem->valSem++;
 		tmp->mySem->updateList(pcb);
+
 		pcb->retVal=0;
 
 		delete tmp;

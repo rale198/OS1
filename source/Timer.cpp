@@ -11,10 +11,12 @@ unsigned oldTimerOFF = 0;
 unsigned oldTimerSEG = 0;
 
 void killThread() {
-	PCB::running->killFlag=1;
+	PCB::running->killFlag = 1;
 }
-void callParent() {}
-void callMySelf() {LOCK cout<<"You've called yourself"<<endl;UNLOCK}
+void callParent() {
+}
+void callMySelf() {
+}
 void Timer::init_timer() {
 #ifndef BCC_BLOCK_IGNORE
 	asm {
@@ -75,4 +77,16 @@ void Timer::init_handlers() {
 	((PCB*) PCB::running)->allSignals[1]->addSignalHandler(callParent);
 	((PCB*) PCB::running)->allSignals[2]->addSignalHandler(callMySelf);
 	UNLOCK
+}
+
+void Timer::restore_system() {
+#ifndef BCC_BLOCK_IGNORE
+	HARD_LOCK
+#endif
+	delete allPCB;
+	delete mainThread;
+	delete PCB::idle;
+#ifndef BCC_BLOCK_IGNORE
+	HARD_UNLOCK
+#endif
 }

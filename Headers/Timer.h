@@ -24,6 +24,7 @@ public:
 	static void restore_timer();
 	static void init_timer();
 	static void init_handlers();
+	static void restore_system();
 
 };
 

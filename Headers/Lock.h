@@ -9,13 +9,20 @@
 #define HEADERS_LOCK_H_
 #include "PCB.h"
 
-extern unsigned volatile lock;
 void dispatch();
+extern unsigned volatile lock;
+
+#define LOCK_TIMER asm cli;
+#define UNLOCK_TIMER asm sti;
 
 #define HARD_LOCK asm { pushf; cli; }
 #define HARD_UNLOCK asm popf;
 
-#define LOCK ++lock;
-#define UNLOCK if(--lock==0&&contextSwitchDelayed==1/*&&(--lock==0)*/){dispatch();}
+#define LOCKED (lock>0)
+#define LOCK lock=lock+1;
+#define UNLOCK lock=lock-1;\
+	if(lock==0&&contextSwitchDelayed==1){\
+		dispatch();\
+	}
 
 #endif /* HEADERS_LOCK_H_ */

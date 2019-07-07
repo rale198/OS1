@@ -25,11 +25,8 @@ public:
 		;
 	};
 
-	ListPCB() {
-		head = prev = 0;
-		size = 0;
-	}
-	;
+	ListPCB();
+
 	~ListPCB();
 	void insertBegin(PCB*);
 	void insertEnd(PCB*);
@@ -37,16 +34,10 @@ public:
 	PCB* removeBegin();
 	Thread* getThreadById(ID);
 
-	int getSize() {
-		return size;
-	}
-	;
 	void write();
 	void updateList(PCB*);
 	void notifyChilds(PCB*);
 private:
-
-	int size;
 	Node *head, *prev;
 };
 

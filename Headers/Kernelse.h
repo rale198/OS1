@@ -13,7 +13,6 @@ class ListSem;
 class Semaphore;
 class SleepList;
 
-extern ListSem* allSems;
 extern SleepList sleepList;
 class KernelSem {
 
@@ -28,7 +27,7 @@ private:
 
 public:
 
-	KernelSem(int init,Semaphore* sem);
+	KernelSem(int init, Semaphore* sem);
 	virtual ~KernelSem();
 
 	int wait(Time maxTimeToWait);

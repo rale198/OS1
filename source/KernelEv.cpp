@@ -39,7 +39,7 @@ void KernelEv::wait()
 	{
 		if(val==0)
 		{
-			val=-1;
+			//val=-1;
 			PCB::running->state=PCB::blocked;
 			dispatch();
 		}
@@ -54,9 +54,9 @@ void KernelEv::signal()
 {
 	LOCK
 
-	if(val==-1)
+	if(this->ownerPCB->state==PCB::blocked/*val==-1*/)
 	{
-		val=0;
+		//val=0;
 		this->ownerPCB->state=PCB::ready;
 		Scheduler::put(this->ownerPCB);
 	}

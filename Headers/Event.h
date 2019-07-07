@@ -21,7 +21,6 @@ void interrupt intr##No(...){\
 	}\
 }
 
-
 class Event {
 public:
 	Event(IVTNo ivtNo);

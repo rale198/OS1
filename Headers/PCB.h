@@ -25,6 +25,8 @@ void interrupt timer(...);
 class Thread;
 class Timer;
 class Queue;
+class SigHandlerLst;
+class Idle;
 
 extern ListPCB* allPCB;
 ID getRunningID();
@@ -36,19 +38,10 @@ public:
 		ready = 0, blocked, run, finished, notStarted
 	};
 
-	friend class Thread;
-	friend class ListPCB;
-	friend class Idle;
-	friend class SleepList;
-	friend class SigHandlerLst;
-	friend class Timer;
-
 	static volatile PCB* running;
 	static volatile PCB* idlePCB;
 	static volatile Idle* idle;
 
-	//30pts deo
-	//POTREBNA INICIJALIZACIJA
 	static volatile short blockedGlobal[16];
 	short blockedThis[16];
 	SigHandlerLst* allSignals[16];
@@ -56,18 +49,19 @@ public:
 	Queue* queue;
 	int killFlag;
 
+	unsigned retVal;
+
 	unsigned *stack;
+	unsigned stackSize;
 	unsigned ss;
 	unsigned sp;
 	unsigned bp;
-	unsigned stackSize;
-	int quant; //timeSlice umnozak;
+	int quant;
 	State state;
 	Thread* myThread;
 	PCB* parentPCB;
 
 	int timeSliceFlag;
-//treba ubaciti listu ready PCB-ova;
 
 	~PCB();
 	PCB(StackSize sizestack, Time slicetime, Thread* const myThread);
@@ -75,9 +69,6 @@ public:
 
 	void waitToComplete();
 	void exThread();
-	void write();
-	unsigned retVal;
-
 
 	void signal(SignalId signal);
 	void registerHandler(SignalId signal, SignalHandler handler);

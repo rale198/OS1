@@ -18,16 +18,12 @@ volatile PCB* mainPCB=0;
 volatile Thread* mainThread=new Thread(1);
 int main(int argc, char* argv[]) {
 
-	//PCB::running = mainPCB;
-
 	Timer::init_timer();
 
 	int i = userMain(argc, argv);
 
 	Timer::restore_timer();
-	delete allPCB;
-	delete allSems;
-	delete mainThread;
+	Timer::restore_system();
 	cout << "Program finished" << endl;
 	return i;
 }
