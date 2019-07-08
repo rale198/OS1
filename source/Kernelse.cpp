@@ -5,16 +5,14 @@
  *      Author: OS1
  */
 #include "Kernelse.h"
-#include "ListSEM.h"
 #include "Lock.h"
-//ListSem* allSems=new ListSem();
+#include "SleepLst.h"
 SleepList sleepList;
 
 KernelSem::KernelSem(int init, Semaphore* sem) {
 	LOCK
 	valSem = init;
 	mySem = sem;
-//	(allSems)->insertBegin(this);
 	blocked=new ListPCB();
 	UNLOCK
 }
@@ -39,7 +37,7 @@ int KernelSem::wait(Time maxTimeToWait) {
 	UNLOCK
 	if(passed)
 		return PCB::running->retVal;
-	return 1; //zbog test primera sa dropBox-a, vratiti na 0
+	return 1;
 
 }
 
@@ -61,7 +59,7 @@ int KernelSem::signal(int n) {
 	else
 	{
 		int val2=-valSem;
-		ret=(val2<n)?val2:n; //number of unblocked threads
+		ret=(val2<n)?val2:n;
 
 		if(ret<0)
 			ret=0;

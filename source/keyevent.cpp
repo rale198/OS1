@@ -10,9 +10,10 @@
 
 #include "bounded.h"
 #include "intLock.h"
-#include "user.h"
+#include "USER.h"
 #include "Event.h"
-#include "IVTEntry.h"
+#include "ivtentry.h"
+//#include "ivtentry.h"
 
 PREPAREENTRY(9,0);
   

@@ -41,13 +41,15 @@ public:
 	static volatile PCB* running;
 	static volatile PCB* idlePCB;
 	static volatile Idle* idle;
-
 	static volatile short blockedGlobal[16];
+
+	Thread* myThread;
+	PCB* parentPCB;
+
 	short blockedThis[16];
 	SigHandlerLst* allSignals[16];
 	ListPCB* blockedPCBs;
 	Queue* queue;
-	int killFlag;
 
 	unsigned retVal;
 
@@ -56,12 +58,13 @@ public:
 	unsigned ss;
 	unsigned sp;
 	unsigned bp;
+
 	int quant;
 	State state;
-	Thread* myThread;
-	PCB* parentPCB;
+
 
 	int timeSliceFlag;
+	int killFlag;
 
 	~PCB();
 	PCB(StackSize sizestack, Time slicetime, Thread* const myThread);

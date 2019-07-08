@@ -12,7 +12,7 @@
 #include "keyevent.h"
 #include "user.h"
 #include "Event.h"
-#include "semaphor.h"
+#include "Semaphor.h"
 
 //---------------------------------------------------------------------------//
 //  Otkomentarisati ukoliko se testiraju signali

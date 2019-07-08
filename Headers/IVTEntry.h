@@ -17,17 +17,18 @@ extern IVTEntry* IVT[256];
 class IVTEntry{
 
 	friend class KernelEv;
-	IVTNo no;
-	pRoutine old_routine;
-	KernelEv* myEvent;
-
 public:
 
 	IVTEntry(IVTNo no,pRoutine new_routine);
-	~IVTEntry();
+	virtual ~IVTEntry();
 
 	void signal();
 	void callOldRoutine();
+
+protected:
+	KernelEv* myEvent;
+	IVTNo no;
+	pRoutine old_routine;
 
 };
 

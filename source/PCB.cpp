@@ -10,10 +10,11 @@
 #include "Lock.h"
 #include "ListSig.h"
 #include "Kernelse.h"
-
+#include "SleepLst.h"
+#include "Timer.h"
 volatile int zahtevana_promena_konteksta = 0;
-volatile int contextSwitchDelayed = 0; //ako sam stigao do 0 ali je zakljucano, kada lock==0 menjas kontekst
-volatile unsigned counter = defaultTimeSlice; //treba da bude usaglasen sa main
+volatile int contextSwitchDelayed = 0;
+volatile unsigned counter = defaultTimeSlice;
 volatile PCB* PCB::running = 0;
 volatile Idle* PCB::idle = new Idle();
 volatile PCB* oldRunning = 0;
@@ -46,6 +47,7 @@ void interrupt timer(...)
 		if ((counter == 0 && !LOCKED && (PCB::running->timeSliceFlag == 1))
 				|| (zahtevana_promena_konteksta == 1)) {
 
+			zahtevana_promena_konteksta = 0;
 			contextSwitchDelayed = 0;
 #ifndef BCC_BLOCK_IGNORE
 			asm {
@@ -85,8 +87,6 @@ void interrupt timer(...)
 				mov bp,tbp
 			}
 #endif
-
-			zahtevana_promena_konteksta = 0;
 
 			lockFlag = 0;
 #ifndef BCC_BLOCK_IGNORE
@@ -164,8 +164,7 @@ PCB::PCB(StackSize sizestack, Time slicetime, Thread* const myThr) {
 	myThread = myThr;
 	parentPCB = (PCB*) PCB::running;
 
-	if (sizestack > 65535)
-		sizestack = 65535;
+	sizestack=sizestack>65535?65535:sizestack;
 
 	this->quant = slicetime;
 	this->retVal = 0;
@@ -206,27 +205,32 @@ PCB::PCB(Thread* myThr) {
 	}
 	this->queue = new Queue();
 	this->killFlag = 0;
+	this->myThread = myThr;
+	this->parentPCB = 0;
 
 	this->retVal = 0;
+
+	this->quant = defaultTimeSlice;
+	this->blockedPCBs = new ListPCB();
+
 	this->stackSize = defaultStackSize / sizeof(unsigned);
 	ss = sp = 0;
-	timeSliceFlag = 1;
-	stack = new unsigned[this->stackSize];
+	this->timeSliceFlag = 1;
+
+	this->stack = new unsigned[this->stackSize];
 #ifndef BCC_BLOCK_IGNORE
 	ss=FP_SEG(stack+defaultStackSize);
 	sp=FP_OFF(stack+defaultStackSize);
 #endif
 	bp = sp;
 
-	this->quant = defaultTimeSlice;
-	myThread = myThr;
-	parentPCB = 0;
-	state = PCB::run;
-	blockedPCBs = new ListPCB();
-
 	mainPCB = this;
+	this->state = PCB::run;
 	PCB::running = this;
+
 	Timer::init_handlers();
+
+
 }
 PCB::~PCB() {
 	LOCK

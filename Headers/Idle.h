@@ -10,7 +10,7 @@
 
 #include "Thread.h"
 #include "Lock.h"
-#include "Kernel.h"
+
 class Idle: public Thread {
 public:
 

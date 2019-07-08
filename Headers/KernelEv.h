@@ -14,9 +14,9 @@ class KernelEv {
 	friend class IVTEntry;
 public:
 	KernelEv(IVTNo ivtNo);
-	~KernelEv();
+	virtual ~KernelEv();
 
-private:
+protected:
 	void wait();
 	void signal();
 

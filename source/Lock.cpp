@@ -5,7 +5,7 @@
  *      Author: OS1
  */
 
-#include "../Headers/Lock.h"
+#include "Lock.h"
 
 unsigned volatile lock = 0;
 

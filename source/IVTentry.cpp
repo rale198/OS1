@@ -37,5 +37,11 @@ void IVTEntry::signal()
 
 void IVTEntry::callOldRoutine()
 {
+#ifndef BCC_BLOCK_IGNORE
+	LOCK_TIMER
+#endif
 	old_routine();
+#ifndef BCC_BLOCK_IGNORE
+	UNLOCK_TIMER
+#endif
 }

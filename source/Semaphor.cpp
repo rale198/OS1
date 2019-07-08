@@ -6,7 +6,6 @@
  */
 
 #include "Kernelse.h"
-#include "ListSEM.h"
 #include "Semaphor.h"
 #include "Lock.h"
 #include "PCB.h"

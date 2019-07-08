@@ -26,12 +26,13 @@ public:
 	};
 
 	ListPCB();
+	virtual ~ListPCB();
 
-	~ListPCB();
 	void insertBegin(PCB*);
+	PCB* removeBegin();
 	void insertEnd(PCB*);
 	PCB* removeEnd();
-	PCB* removeBegin();
+
 	Thread* getThreadById(ID);
 
 	void updateList(PCB*);

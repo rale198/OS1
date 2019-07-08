@@ -7,7 +7,7 @@
 
 #include "KernelEv.h"
 #include "Lock.h"
-
+#include "ivtentry.h"
 KernelEv::KernelEv(IVTNo ivtNo)
 {
 	LOCK

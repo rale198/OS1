@@ -7,7 +7,7 @@
 #ifndef _OS1_KEYBOARD_EVENT_
 #define _OS1_KEYBOARD_EVENT_
 
-#include <thread.h>
+#include <Thread.h>
 
 class BoundedBuffer;
 
