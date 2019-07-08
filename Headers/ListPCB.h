@@ -34,7 +34,6 @@ public:
 	PCB* removeBegin();
 	Thread* getThreadById(ID);
 
-	void write();
 	void updateList(PCB*);
 	void notifyChilds(PCB*);
 private:

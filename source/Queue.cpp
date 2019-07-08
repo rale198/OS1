@@ -36,26 +36,26 @@ SignalId Queue::removeQ() {
 	NodeQue* tmp = head;
 	SignalId ret = 16;
 
-	if (tmp != 0) {
-		head = head->next;
-		ret = tmp->id;
-	}
-
 	if (head == 0) {
 		prev = 0;
+		return ret;
 	}
 
-	if (tmp != 0)
-		delete tmp;
+	ret = tmp->id;
+	head = head->next;
+
+	if (head == 0)
+		prev = 0;
+
+	delete tmp;
+
 	return ret;
 }
 
-void Queue::ispis()
-{
-	for(NodeQue *tmp=head;tmp!=0;tmp=tmp->next)
-	{
+void Queue::ispis() {
+	for (NodeQue *tmp = head; tmp != 0; tmp = tmp->next) {
 		LOCK
-		cout<<tmp->id<<endl;
+		cout << tmp->id << endl;
 		UNLOCK
 	}
 }

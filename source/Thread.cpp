@@ -26,6 +26,7 @@ Thread::Thread(StackSize stackSize, Time timeSlice) {
 
 Thread::Thread(int a) {
 	LOCK
+	a++;
 	this->id = 0;
 	myPCB = new PCB(this);
 

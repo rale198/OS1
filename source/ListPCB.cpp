@@ -46,11 +46,6 @@ void ListPCB::insertEnd(PCB *p) {
 	prev = novi;
 
 }
-void ListPCB::write() {
-
-	for (Node* tmp = head; tmp != 0; tmp = tmp->next)
-		cout << tmp->pcb->myThread->getId() << " ";
-}
 
 PCB* ListPCB::removeEnd() {
 
