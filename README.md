@@ -1,2 +1,2 @@
-# OS1
-Projekat iz predmeta Operativni Sistemi 1, profesor Dragan Milićev
+# Operating Systems
+Preemptive multitasking kernel with time sharing for x86 CPUs written in C++ and assembly.
